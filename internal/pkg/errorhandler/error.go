@@ -45,7 +45,6 @@ func HandleError(c *gin.Context, err error) {
 	switch e := err.(type) {
 
 	case *CustomError:
-		// Jika error sudah di-wrap dengan CustomError
 		c.JSON(e.Code, gin.H{
 			"error":   e.Error(),
 			"details": e.Details,
@@ -53,7 +52,6 @@ func HandleError(c *gin.Context, err error) {
 		return
 
 	case validator.ValidationErrors:
-		// Jika error dari validator
 		validationErrs := FormatValidationError(e)
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
 			"error":   "Validation Error",
@@ -62,7 +60,6 @@ func HandleError(c *gin.Context, err error) {
 		return
 
 	default:
-		// Fallback unknown error
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error":   "Internal server error",
 			"details": e.Error(),

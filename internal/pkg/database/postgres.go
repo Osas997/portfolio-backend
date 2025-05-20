@@ -30,12 +30,6 @@ func InitDB() *gorm.DB {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
-	sql := `CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`
-	err = db.Exec(sql).Error
-	if err != nil {
-		log.Fatalf("Failed to create uuid-ossp extension: %v", err)
-	}
-
 	log.Println("Connected to database successfully")
 	DB = db
 	return db

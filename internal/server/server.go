@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/Osas997/go-portfolio/internal/domains/auth"
@@ -61,7 +62,10 @@ func (s *Server) Start() error {
 }
 
 func (s *Server) runMigrations() {
-	s.db.Migrator().DropTable(&entity.User{})
-	// s.db.AutoMigrate(&entity.User{})
+	s.db.Migrator().DropTable(entity.User{})
+	s.db.AutoMigrate(&entity.User{})
+	user := &entity.User{Username: "admin", Password: "password"}
+	s.db.Create(user)
+	log.Print(user)
 	// Add other model migrations here
 }
