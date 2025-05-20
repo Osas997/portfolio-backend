@@ -64,7 +64,7 @@ func (s *Server) Start() error {
 func (s *Server) runMigrations() {
 	s.db.Migrator().DropTable(entity.User{})
 	s.db.AutoMigrate(&entity.User{})
-	user := &entity.User{Username: "admin", Password: "password"}
+	user := &entity.User{Username: "admin", Password: "admin"}
 	s.db.Create(user)
 	log.Print(user)
 	// Add other model migrations here
