@@ -11,6 +11,8 @@ import (
 	"github.com/Osas997/go-portfolio/internal/domains/auth/repository"
 	"github.com/Osas997/go-portfolio/internal/domains/auth/service"
 	"github.com/Osas997/go-portfolio/internal/pkg/database"
+	"github.com/Osas997/go-portfolio/internal/pkg/hash"
+	"github.com/Osas997/go-portfolio/internal/pkg/token"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
@@ -49,10 +51,8 @@ func (s *Server) setupRoutes() {
 }
 
 func (s *Server) Start() error {
-	// Run database migrations
 	s.runMigrations()
 
-	// Start the server
 	port := os.Getenv("SERVER_PORT")
 	if port == "" {
 		port = "8080"
@@ -62,10 +62,21 @@ func (s *Server) Start() error {
 }
 
 func (s *Server) runMigrations() {
+	// user
 	s.db.Migrator().DropTable(entity.User{})
 	s.db.AutoMigrate(&entity.User{})
-	user := &entity.User{Username: "admin", Password: "admin"}
+	password, _ := hash.HashPassword("password")
+
+	user := &entity.User{Username: "admin", Password: password}
 	s.db.Create(user)
-	log.Print(user)
+
+	tokens, err := token.GenerateToken(user)
+	if err != nil {
+		panic(err)
+	}
+
+	log.Println("access token: ", tokens.AccessToken)
+	log.Println("refresh token: ", tokens.RefreshToken)
+
 	// Add other model migrations here
 }

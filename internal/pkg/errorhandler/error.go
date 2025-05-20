@@ -45,7 +45,13 @@ func HandleError(c *gin.Context, err error) {
 	switch e := err.(type) {
 
 	case *CustomError:
-		c.JSON(e.Code, gin.H{
+		if e.Details == nil {
+			c.AbortWithStatusJSON(e.Code, gin.H{
+				"error": e.Error(),
+			})
+			return
+		}
+		c.AbortWithStatusJSON(e.Code, gin.H{
 			"error":   e.Error(),
 			"details": e.Details,
 		})
@@ -53,14 +59,14 @@ func HandleError(c *gin.Context, err error) {
 
 	case validator.ValidationErrors:
 		validationErrs := FormatValidationError(e)
-		c.JSON(http.StatusUnprocessableEntity, gin.H{
+		c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{
 			"error":   "Validation Error",
 			"details": validationErrs,
 		})
 		return
 
 	default:
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"error":   "Internal server error",
 			"details": e.Error(),
 		})

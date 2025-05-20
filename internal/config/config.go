@@ -20,11 +20,15 @@ func LoadConfig() {
 		"DB_NAME",
 		"DB_USER",
 		"JWT_SECRET",
+		"JWT_REFRESH_SECRET",
+		"JWT_EXPIRED_AT",
+		"JWT_REFRESH_EXPIRED_AT",
 	}
 
 	for _, envVar := range requiredEnvVars {
 		if os.Getenv(envVar) == "" {
 			log.Fatalf("Required environment variable %s is not set", envVar)
+			panic("Required environment variable is not set")
 		}
 	}
 
