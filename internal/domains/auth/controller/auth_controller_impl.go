@@ -1,11 +1,10 @@
 package controller
 
 import (
-	"log"
-
 	"github.com/Osas997/go-portfolio/internal/domains/auth/params"
 	"github.com/Osas997/go-portfolio/internal/domains/auth/service"
 	"github.com/Osas997/go-portfolio/internal/pkg/errorhandler"
+	"github.com/Osas997/go-portfolio/internal/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
@@ -32,7 +31,13 @@ func (a *AuthControllerImpl) Login(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, gin.H{"message": "Hello World!"})
+	tokens, err := a.AuthService.Login(&authRequest)
+	if err != nil {
+		errorhandler.HandleError(ctx, err)
+		return
+	}
 
-	log.Print("Login Berhasil")
+	webResponse := utils.NewWebResponse("Login successful", tokens)
+
+	ctx.JSON(200, webResponse)
 }

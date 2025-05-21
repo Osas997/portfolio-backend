@@ -2,17 +2,13 @@ package server
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/Osas997/go-portfolio/internal/domains/auth"
 	"github.com/Osas997/go-portfolio/internal/domains/auth/controller"
-	"github.com/Osas997/go-portfolio/internal/domains/auth/entity"
 	"github.com/Osas997/go-portfolio/internal/domains/auth/repository"
 	"github.com/Osas997/go-portfolio/internal/domains/auth/service"
 	"github.com/Osas997/go-portfolio/internal/pkg/database"
-	"github.com/Osas997/go-portfolio/internal/pkg/hash"
-	"github.com/Osas997/go-portfolio/internal/pkg/token"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
@@ -63,20 +59,20 @@ func (s *Server) Start() error {
 
 func (s *Server) runMigrations() {
 	// user
-	s.db.Migrator().DropTable(entity.User{})
-	s.db.AutoMigrate(&entity.User{})
-	password, _ := hash.HashPassword("password")
+	// s.db.Migrator().DropTable(entity.User{})
+	// s.db.AutoMigrate(&entity.User{})
+	// password, _ := hash.HashPassword("password")
 
-	user := &entity.User{Username: "admin", Password: password}
-	s.db.Create(user)
+	// user := &entity.User{Username: "admin", Password: password}
+	// s.db.Create(user)
 
-	tokens, err := token.GenerateToken(user)
-	if err != nil {
-		panic(err)
-	}
+	// tokens, err := token.GenerateToken(user)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	log.Println("access token: ", tokens.AccessToken)
-	log.Println("refresh token: ", tokens.RefreshToken)
+	// log.Println("access token: ", tokens.AccessToken)
+	// log.Println("refresh token: ", tokens.RefreshToken)
 
 	// Add other model migrations here
 }
