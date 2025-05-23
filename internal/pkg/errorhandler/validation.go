@@ -25,6 +25,12 @@ func msgForTag(tag string) string {
 		return "value is too short"
 	case "max":
 		return "value is too long"
+	case "isFile":
+		return "field must be a file"
+	case "image":
+		return "field must be an image file"
+	case "fileSize":
+		return "file size is too large"
 	default:
 		return "invalid value"
 	}

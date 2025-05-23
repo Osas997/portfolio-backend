@@ -1,4 +1,4 @@
-package auth
+package projects
 
 import (
 	"github.com/Osas997/go-portfolio/internal/domains/projects/controller"
@@ -7,9 +7,13 @@ import (
 )
 
 func RegisterRoutes(router *gin.RouterGroup, controller controller.ProjectController) {
-	routes := router.Group("/project")
-	router.Use(middleware.AuthMiddleware())
+	routes := router.Group("/projects")
 	{
-		routes.GET("/", controller.FindAll)
+		routes.Use(middleware.AuthMiddleware())
+		routes.GET("", controller.FindAll)
+		routes.POST("", controller.Create)
+		routes.GET(":id", controller.FindById)
+		routes.PATCH(":id", controller.Update)
+		routes.DELETE(":id", controller.Delete)
 	}
 }

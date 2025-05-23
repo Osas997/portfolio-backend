@@ -5,10 +5,17 @@ import (
 	"os"
 
 	"github.com/Osas997/go-portfolio/internal/domains/auth"
-	"github.com/Osas997/go-portfolio/internal/domains/auth/controller"
-	"github.com/Osas997/go-portfolio/internal/domains/auth/repository"
-	"github.com/Osas997/go-portfolio/internal/domains/auth/service"
+	authController "github.com/Osas997/go-portfolio/internal/domains/auth/controller"
+	authRepository "github.com/Osas997/go-portfolio/internal/domains/auth/repository"
+	authService "github.com/Osas997/go-portfolio/internal/domains/auth/service"
+
+	"github.com/Osas997/go-portfolio/internal/domains/projects"
+	projectsController "github.com/Osas997/go-portfolio/internal/domains/projects/controller"
+	projectsRepository "github.com/Osas997/go-portfolio/internal/domains/projects/repository"
+	projectsService "github.com/Osas997/go-portfolio/internal/domains/projects/service"
+
 	"github.com/Osas997/go-portfolio/internal/pkg/database"
+	"github.com/Osas997/go-portfolio/internal/pkg/uploadfile"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
@@ -24,6 +31,8 @@ func NewServer() *Server {
 	db := database.InitDB()
 	router := gin.Default()
 	validate := validator.New()
+	uploadfile.RegisterCustomValidators(validate)
+	router.Static("/uploads", "./uploads")
 
 	server := &Server{
 		db:       db,
@@ -38,12 +47,18 @@ func NewServer() *Server {
 func (s *Server) setupRoutes() {
 	routes := s.router.Group("/api")
 
-	userRepo := repository.NewUserRepository(s.db)
-	authService := service.NewAuthService(userRepo)
-	authController := controller.NewAuthController(authService, s.validate)
-	auth.RegisterRoutes(routes, authController)
+	// auth domain
+	userRepo := authRepository.NewUserRepository(s.db)
+	authServ := authService.NewAuthService(userRepo)
+	authCtrl := authController.NewAuthController(authServ, s.validate)
+	auth.RegisterRoutes(routes, authCtrl)
 
-	// Add other domain routes here
+	// projects domain
+	projectsRepo := projectsRepository.NewProjectRepository(s.db)
+	projectsImageRepo := projectsRepository.NewProjectImagesRepository(s.db)
+	projectsServ := projectsService.NewProjectService(projectsRepo, projectsImageRepo)
+	projectsCtrl := projectsController.NewProjectController(projectsServ, s.validate)
+	projects.RegisterRoutes(routes, projectsCtrl)
 }
 
 func (s *Server) Start() error {
@@ -61,6 +76,8 @@ func (s *Server) runMigrations() {
 	// user
 	// s.db.Migrator().DropTable(entity.User{})
 	// s.db.AutoMigrate(&entity.User{})
+	// s.db.AutoMigrate(&entity.Projects{})
+	// s.db.AutoMigrate(&entity.ProjectImages{})
 	// password, _ := hash.HashPassword("password")
 
 	// user := &entity.User{Username: "admin", Password: password}

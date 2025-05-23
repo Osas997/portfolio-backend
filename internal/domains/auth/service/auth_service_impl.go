@@ -39,5 +39,26 @@ func (a *AuthServiceImpl) Login(authRequest *params.AuthRequest) (*params.AuthRe
 		return nil, err
 	}
 
+	user.Refresh_token = tokens.RefreshToken
+	if _, err := a.repository.Save(user); err != nil {
+		return nil, err
+	}
+
 	return &params.AuthResponse{AccessToken: tokens.AccessToken, RefreshToken: tokens.RefreshToken}, nil
+}
+
+func (a *AuthServiceImpl) Logout(userId string) error {
+	user, err := a.repository.GetUserById(userId)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return errorhandler.NewNotFoundError("User not found")
+		}
+		return err
+	}
+
+	user.Refresh_token = ""
+	if _, err := a.repository.Save(user); err != nil {
+		return err
+	}
+	return nil
 }

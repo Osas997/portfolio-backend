@@ -4,6 +4,7 @@ import (
 	"github.com/Osas997/go-portfolio/internal/domains/auth/params"
 	"github.com/Osas997/go-portfolio/internal/domains/auth/service"
 	"github.com/Osas997/go-portfolio/internal/pkg/errorhandler"
+	"github.com/Osas997/go-portfolio/internal/pkg/token"
 	"github.com/Osas997/go-portfolio/internal/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -38,6 +39,19 @@ func (a *AuthControllerImpl) Login(ctx *gin.Context) {
 	}
 
 	webResponse := utils.NewWebResponse("Login successful", tokens)
+
+	ctx.JSON(200, webResponse)
+}
+
+func (a *AuthControllerImpl) Logout(ctx *gin.Context) {
+	var payload *token.Payload = ctx.MustGet("user").(*token.Payload)
+
+	if err := a.AuthService.Logout(payload.Sub.String()); err != nil {
+		errorhandler.HandleError(ctx, err)
+		return
+	}
+
+	webResponse := utils.NewWebResponse("Logout successful", nil)
 
 	ctx.JSON(200, webResponse)
 }
