@@ -15,7 +15,7 @@ type tokenResponse struct {
 	RefreshToken string
 }
 
-func signToken(payload *Payload, TOKEN_Key string) (string, error) {
+func SignToken(payload *Payload, TOKEN_Key string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
 
 	tokenStr, err := token.SignedString([]byte(TOKEN_Key))
@@ -56,7 +56,7 @@ func GenerateToken(user *entity.User) (*tokenResponse, error) {
 		},
 	}
 
-	accesToken, err := signToken(accessTokenPayload, os.Getenv("JWT_SECRET"))
+	accesToken, err := SignToken(accessTokenPayload, os.Getenv("JWT_SECRET"))
 	if err != nil {
 		return &tokenResponse{}, err
 	}
@@ -70,7 +70,7 @@ func GenerateToken(user *entity.User) (*tokenResponse, error) {
 		},
 	}
 
-	refreshToken, err := signToken(refreshTokenPayload, os.Getenv("JWT_REFRESH_SECRET"))
+	refreshToken, err := SignToken(refreshTokenPayload, os.Getenv("JWT_REFRESH_SECRET"))
 	if err != nil {
 		return &tokenResponse{}, err
 	}

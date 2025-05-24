@@ -11,7 +11,9 @@ func RegisterRoutes(router *gin.RouterGroup, controller controller.AuthControlle
 	routes := router.Group("/auth")
 	{
 		routes.POST("/login", controller.Login)
-		authRoutes := routes.Group("/")
+		routes.POST("/refresh", controller.Refresh)
+
+		authRoutes := routes.Group("")
 		authRoutes.Use(middleware.AuthMiddleware())
 		{
 			authRoutes.GET("/me", func(ctx *gin.Context) {

@@ -1,6 +1,8 @@
 package service
 
 import (
+	"os"
+
 	"github.com/Osas997/go-portfolio/internal/domains/auth/params"
 	"github.com/Osas997/go-portfolio/internal/domains/auth/repository"
 	"github.com/Osas997/go-portfolio/internal/pkg/errorhandler"
@@ -61,4 +63,30 @@ func (a *AuthServiceImpl) Logout(userId string) error {
 		return err
 	}
 	return nil
+}
+
+func (a *AuthServiceImpl) Refresh(refreshRequest *params.RefreshTokenRequest) (*params.RefreshTokenResponse, error) {
+	payload, err := token.VerifyToken(refreshRequest.RefreshToken, os.Getenv("JWT_REFRESH_SECRET"))
+	if err != nil {
+		return nil, errorhandler.NewNotFoundError("Invalid refresh token")
+	}
+
+	user, err := a.repository.GetUserById(payload.Sub.String())
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, errorhandler.NewNotFoundError("User not found")
+		}
+		return nil, err
+	}
+
+	if user.Refresh_token != refreshRequest.RefreshToken {
+		return nil, errorhandler.NewNotFoundError("Invalid refresh token")
+	}
+
+	accessToken, err := token.GenerateToken(user)
+	if err != nil {
+		return nil, err
+	}
+
+	return &params.RefreshTokenResponse{AccessToken: accessToken.AccessToken}, nil
 }

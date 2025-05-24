@@ -55,3 +55,27 @@ func (a *AuthControllerImpl) Logout(ctx *gin.Context) {
 
 	ctx.JSON(200, webResponse)
 }
+
+func (a *AuthControllerImpl) Refresh(ctx *gin.Context) {
+	var refreshRequest params.RefreshTokenRequest
+
+	if err := ctx.ShouldBindJSON(&refreshRequest); err != nil {
+		errorhandler.HandleError(ctx, errorhandler.NewBadRequestError("Invalid JSON", err.Error()))
+		return
+	}
+
+	if err := a.validate.Struct(refreshRequest); err != nil {
+		errorhandler.HandleError(ctx, err)
+		return
+	}
+
+	token, err := a.AuthService.Refresh(&refreshRequest)
+	if err != nil {
+		errorhandler.HandleError(ctx, err)
+		return
+	}
+
+	webResponse := utils.NewWebResponse("Refresh token successful", token)
+
+	ctx.JSON(200, webResponse)
+}
