@@ -106,7 +106,7 @@ func (p *ProjectControllerImpl) Update(ctx *gin.Context) {
 		return
 	}
 
-	webResponse := utils.NewWebResponse("Project found successfully", updatedProject.ID)
+	webResponse := utils.NewWebResponse("Project updated successfully", updatedProject.ID)
 
 	ctx.JSON(200, webResponse)
 }
