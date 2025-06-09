@@ -6,18 +6,16 @@ import (
 
 	"github.com/Osas997/go-portfolio/internal/domains/auth"
 	authController "github.com/Osas997/go-portfolio/internal/domains/auth/controller"
-	userEntity "github.com/Osas997/go-portfolio/internal/domains/auth/entity"
 	authRepository "github.com/Osas997/go-portfolio/internal/domains/auth/repository"
 	authService "github.com/Osas997/go-portfolio/internal/domains/auth/service"
+	"github.com/Osas997/go-portfolio/internal/middleware"
 
 	"github.com/Osas997/go-portfolio/internal/domains/projects"
 	projectsController "github.com/Osas997/go-portfolio/internal/domains/projects/controller"
-	projectsEntity "github.com/Osas997/go-portfolio/internal/domains/projects/entity"
 	projectsRepository "github.com/Osas997/go-portfolio/internal/domains/projects/repository"
 	projectsService "github.com/Osas997/go-portfolio/internal/domains/projects/service"
 
 	"github.com/Osas997/go-portfolio/internal/pkg/database"
-	"github.com/Osas997/go-portfolio/internal/pkg/hash"
 	"github.com/Osas997/go-portfolio/internal/pkg/uploadfile"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -35,6 +33,8 @@ func NewServer() *Server {
 	router := gin.Default()
 	validate := validator.New()
 	uploadfile.RegisterCustomValidators(validate)
+
+	router.Use(middleware.CORS)
 	router.Static("/uploads", "./uploads")
 
 	server := &Server{
@@ -77,14 +77,14 @@ func (s *Server) Start() error {
 
 func (s *Server) runMigrations() {
 	// user
-	s.db.Migrator().DropTable(userEntity.User{})
-	s.db.AutoMigrate(&userEntity.User{})
-	s.db.AutoMigrate(&projectsEntity.Projects{})
-	s.db.AutoMigrate(&projectsEntity.ProjectImages{})
-	password, _ := hash.HashPassword("password")
+	// s.db.Migrator().DropTable(userEntity.User{})
+	// s.db.AutoMigrate(&userEntity.User{})
+	// s.db.AutoMigrate(&projectsEntity.Projects{})
+	// s.db.AutoMigrate(&projectsEntity.ProjectImages{})
+	// password, _ := hash.HashPassword("password")
 
-	user := &userEntity.User{Username: "admin", Password: password}
-	s.db.Create(user)
+	// user := &userEntity.User{Username: "admin", Password: password}
+	// s.db.Create(user)
 
 	// Add other model migrations here
 }
