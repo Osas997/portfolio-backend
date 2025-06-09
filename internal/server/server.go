@@ -29,7 +29,6 @@ type Server struct {
 }
 
 func NewServer() *Server {
-	gin.SetMode(gin.ReleaseMode)
 	db := database.InitDB()
 	router := gin.Default()
 	validate := validator.New()
