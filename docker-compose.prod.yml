@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  portfolio-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: portfolio-backend-prod
+    restart: always
+    ports:
+      - "${SERVER_PORT}:8080"
+    environment:
+      # Server Configuration
+      SERVER_PORT: ${SERVER_PORT}
+      SERVER_HOST: 0.0.0.0
+
+      # Database Configuration
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_SSL_MODE: ${DB_SSL_MODE}
+
+      # JWT Configuration
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_EXPIRED_AT: ${JWT_EXPIRED_AT}
+      JWT_REFRESH_EXPIRED_AT: ${JWT_REFRESH_EXPIRED_AT}
+    volumes:
+      - ./uploads:/app/uploads
+    networks:
+      - portfolio-network
+    healthcheck:
+      test: ["CMD", "/app/main", "--health-check"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  portfolio-network:
+    driver: bridge

@@ -41,7 +41,7 @@ func (p *ProjectServiceImpl) Create(projectReq *params.ProjectRequest, ctx *gin.
 
 	newProject, err := p.repository.Save(&project)
 	if err != nil {
-		return &entity.Projects{}, nil
+		return &entity.Projects{}, err
 	}
 
 	// Save All Images
@@ -59,7 +59,7 @@ func (p *ProjectServiceImpl) Create(projectReq *params.ProjectRequest, ctx *gin.
 
 		_, err := p.projectImagesRepository.Save(&projectImages)
 		if err != nil {
-			return &entity.Projects{}, nil
+			return &entity.Projects{}, err
 		}
 	}
 

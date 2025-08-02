@@ -18,7 +18,7 @@ func RegisterRoutes(router *gin.RouterGroup, controller controller.AuthControlle
 		{
 			authRoutes.GET("/me", func(ctx *gin.Context) {
 				payload, _ := ctx.Get("user")
-				ctx.JSON(200, gin.H{"data": payload.(*token.Payload).Sub})
+				ctx.JSON(200, gin.H{"data": payload.(*token.Payload), "message": "success get user"})
 			})
 			authRoutes.POST("/logout", controller.Logout)
 		}
