@@ -7,7 +7,10 @@ import (
 )
 
 func RegisterRoutes(router *gin.RouterGroup, controller controller.ProjectController) {
-	routes := router.Group("/projects")
+	routesPublic := router.Group("/projects")
+	routesPublic.GET("", controller.FindAll)
+
+	routes := router.Group("/cms/projects")
 	routes.Use(middleware.AuthMiddleware())
 	{
 		routes.GET("", controller.FindAll)
