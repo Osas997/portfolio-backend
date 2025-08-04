@@ -8,6 +8,7 @@ import (
 )
 
 func RegisterRoutes(router *gin.RouterGroup, controller controller.AuthController) {
+	router.GET("/csrf-token", controller.CsrfToken)
 	routes := router.Group("/auth")
 	{
 		routes.POST("/login", controller.Login)
@@ -15,6 +16,7 @@ func RegisterRoutes(router *gin.RouterGroup, controller controller.AuthControlle
 
 		authRoutes := routes.Group("")
 		authRoutes.Use(middleware.AuthMiddleware())
+		authRoutes.Use(middleware.CsrfMiddleware())
 		{
 			authRoutes.GET("/me", func(ctx *gin.Context) {
 				payload, _ := ctx.Get("user")

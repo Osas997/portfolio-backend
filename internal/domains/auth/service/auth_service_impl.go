@@ -65,8 +65,8 @@ func (a *AuthServiceImpl) Logout(userId string) error {
 	return nil
 }
 
-func (a *AuthServiceImpl) Refresh(refreshRequest *params.RefreshTokenRequest) (*params.RefreshTokenResponse, error) {
-	payload, err := token.VerifyToken(refreshRequest.RefreshToken, os.Getenv("JWT_REFRESH_SECRET"))
+func (a *AuthServiceImpl) Refresh(refreshToken string) (*params.RefreshTokenResponse, error) {
+	payload, err := token.VerifyToken(refreshToken, os.Getenv("JWT_REFRESH_SECRET"))
 	if err != nil {
 		return nil, errorhandler.NewNotFoundError("Invalid refresh token")
 	}
@@ -79,7 +79,7 @@ func (a *AuthServiceImpl) Refresh(refreshRequest *params.RefreshTokenRequest) (*
 		return nil, err
 	}
 
-	if user.Refresh_token != refreshRequest.RefreshToken {
+	if user.Refresh_token != refreshToken {
 		return nil, errorhandler.NewNotFoundError("Invalid refresh token")
 	}
 
@@ -89,4 +89,8 @@ func (a *AuthServiceImpl) Refresh(refreshRequest *params.RefreshTokenRequest) (*
 	}
 
 	return &params.RefreshTokenResponse{AccessToken: accessToken.AccessToken}, nil
+}
+
+func (a *AuthServiceImpl) CsrfToken() string {
+	return token.GenerateCsrfToken()
 }

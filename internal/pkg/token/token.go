@@ -8,6 +8,7 @@ import (
 	"github.com/Osas997/go-portfolio/internal/domains/auth/entity"
 	"github.com/Osas997/go-portfolio/internal/pkg/utils"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
 type tokenResponse struct {
@@ -97,4 +98,8 @@ func VerifyToken(tokenStr string, secret string) (*Payload, error) {
 	}
 
 	return claims, nil
+}
+
+func GenerateCsrfToken() string {
+	return uuid.New().String()
 }

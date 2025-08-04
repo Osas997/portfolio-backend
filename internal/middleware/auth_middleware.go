@@ -12,17 +12,16 @@ import (
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		tokenString, err := extractToken(c)
+		tokenString, err := c.Cookie("access_token")
 		if err != nil {
-			errorhandler.HandleError(c, err)
+			errorhandler.HandleError(c, errorhandler.NewUnauthorizedError("Token not found"))
 			return
 		}
 
 		secret := os.Getenv("JWT_SECRET")
 		claims, err := token.VerifyToken(tokenString, secret)
 		if err != nil {
-			appErr := errorhandler.NewUnauthorizedError("Invalid or expired token")
-			errorhandler.HandleError(c, appErr)
+			errorhandler.HandleError(c, errorhandler.NewUnauthorizedError("Invalid or expired token"))
 			return
 		}
 
