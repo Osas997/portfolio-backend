@@ -23,7 +23,6 @@ func LoadConfig() {
 		"JWT_REFRESH_SECRET",
 		"JWT_EXPIRED_AT",
 		"JWT_REFRESH_EXPIRED_AT",
-		"REDIS_HOST",
 	}
 
 	for _, envVar := range requiredEnvVars {
