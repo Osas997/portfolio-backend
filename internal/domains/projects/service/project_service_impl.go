@@ -97,15 +97,15 @@ func (p *ProjectServiceImpl) Delete(userId string) error {
 }
 
 // FindAll implements ProjectService.
-func (p *ProjectServiceImpl) FindAll() ([]*params.ProjectResponse, error) {
-	projects, err := p.repository.FindAll()
+func (p *ProjectServiceImpl) FindAll(page, limit int) ([]*params.ProjectResponse, int64, error) {
+	projects, total, err := p.repository.FindAllWithPagination(page, limit)
 	if err != nil {
-		return []*params.ProjectResponse{}, err
+		return []*params.ProjectResponse{}, 0, err
 	}
 
 	projectResponse := params.NewProjectResponse(projects)
 
-	return projectResponse, nil
+	return projectResponse, total, nil
 }
 
 // FindById implements ProjectService.

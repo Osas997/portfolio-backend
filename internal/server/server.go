@@ -35,6 +35,7 @@ func NewServer() *Server {
 	uploadfile.RegisterCustomValidators(validate)
 
 	router.Use(middleware.CORS)
+	router.Use(middleware.CsrfMiddleware())
 	router.Static("/uploads", "./uploads")
 
 	server := &Server{

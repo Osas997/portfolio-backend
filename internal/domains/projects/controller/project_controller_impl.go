@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"strconv"
+
 	"github.com/Osas997/go-portfolio/internal/domains/projects/params"
 	"github.com/Osas997/go-portfolio/internal/domains/projects/service"
 	"github.com/Osas997/go-portfolio/internal/pkg/errorhandler"
@@ -60,13 +62,25 @@ func (p *ProjectControllerImpl) Delete(ctx *gin.Context) {
 
 // FindAll implements ProjectController.
 func (p *ProjectControllerImpl) FindAll(ctx *gin.Context) {
-	projects, err := p.ProjectService.FindAll()
+	pageStr := ctx.DefaultQuery("page", "1")
+	limitStr := ctx.DefaultQuery("limit", "10")
+	page, err := strconv.Atoi(pageStr)
+	if err != nil || page < 1 {
+		page = 1
+	}
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit < 1 || limit > 100 {
+		limit = 10
+	}
+
+	projects, total, err := p.ProjectService.FindAll(page, limit)
 	if err != nil {
 		errorhandler.HandleError(ctx, err)
 		return
 	}
 
 	webResponse := utils.NewWebResponse("Projects found successfully", projects)
+	webResponse.Meta = utils.NewPaginationMeta(page, limit, total)
 
 	ctx.JSON(200, webResponse)
 }
